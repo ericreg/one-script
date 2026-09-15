@@ -1,0 +1,5 @@
+# kept comment one
+# kept comment two
+@decorator
+def decorated(value=DEFAULT):
+    return value

@@ -1,0 +1,1 @@
+VALUE_IN_INIT = 1
