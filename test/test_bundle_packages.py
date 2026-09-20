@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-import main as gaffer
+import one_script
 
 FIXTURES = Path("test") / "fixtures"
 OUTPUTS = ROOT / "test" / "output"
@@ -34,7 +34,7 @@ def repo_root():
 
 def bundle_text(package_name: str, *, excludes: list[str] | None = None) -> str:
     with repo_root():
-        return gaffer.bundle(fixture_package(package_name), package_name, exclude_patterns=excludes)
+        return one_script.bundle(fixture_package(package_name), package_name, exclude_patterns=excludes)
 
 
 def expected_bundle(name: str) -> str:
@@ -77,7 +77,7 @@ class TestBundlePackages:
         assert isinstance(namespace["Child"](), namespace["Base"])
         assert isinstance(namespace["UsesLater"]().build(), namespace["LaterThing"])
 
-    def test_nonstdlib_local_module_imports_are_removed(self):
+    def test_explicit_internal_symbol_imports_are_removed(self):
         text, namespace = bundled_namespace("importpkg")
 
         assert text == expected_bundle("importpkg")
@@ -98,7 +98,7 @@ class TestBundlePackages:
         assert namespace["Queue"].__name__ == "Queue"
 
     def test_exclude_patterns_omit_bad_real_package_modules(self):
-        with pytest.raises(gaffer.BundleError):
+        with pytest.raises(one_script.BundleError):
             bundle_text("exclude_pkg")
 
         text, namespace = bundled_namespace("exclude_pkg", excludes=["skip.py", "internal/drop.py"])
@@ -113,26 +113,26 @@ class TestBundlePackages:
         assert text == expected_bundle("empty_pkg")
 
     def test_init_file_function_is_a_bundle_error(self):
-        with pytest.raises(gaffer.BundleError, match="__init__.py must contain only imports"):
+        with pytest.raises(one_script.BundleError, match="__init__.py must contain only imports"):
             bundle_text("init_function_pkg")
 
     def test_init_file_assignment_is_a_bundle_error(self):
-        with pytest.raises(gaffer.BundleError, match="module-level assignment"):
+        with pytest.raises(one_script.BundleError, match="module-level assignment"):
             bundle_text("init_assignment_pkg")
 
     def test_unsupported_top_level_main_block_has_specific_error(self):
         expected_error = (OUTPUTS / "bad_top_level_error.txt").read_text().strip()
-        with pytest.raises(gaffer.BundleError, match=re.escape(expected_error)):
+        with pytest.raises(one_script.BundleError, match=re.escape(expected_error)):
             bundle_text("bad_top_level_pkg")
 
     def test_unsupported_top_level_statement_is_a_bundle_error(self):
-        with pytest.raises(gaffer.BundleError, match="unsupported top-level For"):
+        with pytest.raises(one_script.BundleError, match="unsupported top-level For"):
             bundle_text("unsupported_pkg")
 
     def test_name_collision_is_reported(self):
-        with pytest.raises(ValueError, match="name collision: 'duplicate'"):
+        with pytest.raises(one_script.BundleError, match="name collision: 'duplicate'"):
             bundle_text("collision_pkg")
 
     def test_hard_dependency_cycle_is_reported(self):
-        with pytest.raises(gaffer.BundleError, match="hard dependency cycle"):
+        with pytest.raises(one_script.BundleError, match="hard dependency cycle"):
             bundle_text("cycle_pkg")

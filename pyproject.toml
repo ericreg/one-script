@@ -1,15 +1,31 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "gaffer"
+name = "one-script"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+description = "Flatten supported pure-Python packages into a single readable Python file"
+readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.13"
-dependencies = []
+dependencies = ["ruff>=0.14.0"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Build Tools",
+]
+
+[project.scripts]
+one-script = "one_script:main"
+
+[tool.setuptools]
+py-modules = ["one_script"]
 
 [dependency-groups]
-dev = [
-    "pytest>=8.0",
-]
+dev = ["pytest>=8.0", "build>=1.2", "twine>=6.1", "packaging>=24"]
 
 [tool.pytest.ini_options]
 testpaths = ["test"]

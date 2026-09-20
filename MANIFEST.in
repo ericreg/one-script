@@ -1,0 +1,3 @@
+include README.md pyproject.toml uv.lock
+recursive-include test *.py *.txt
+recursive-include scripts *.py

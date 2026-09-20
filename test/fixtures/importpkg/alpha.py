@@ -1,9 +1,6 @@
-import beta
 import collections
-from beta import Beta
-from importpkg import exported
-from importpkg.gamma import Gamma
-from .gamma import Gamma as RelativeGamma
+from importpkg.beta import Beta
+from .gamma import Gamma
 
 
 class Alpha:

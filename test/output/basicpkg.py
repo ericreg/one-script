@@ -1,9 +1,9 @@
 """Bundled from package 'basicpkg'."""
 
-import json
 import os
-from functools import wraps
 from math import sqrt
+from functools import wraps
+import json
 
 
 # imported from: test/fixtures/basicpkg/async_tools.py
@@ -47,12 +47,14 @@ class Entity:
     def __init__(self, name):
         self.name = name
 
+
 class Worker(Entity):
     def score(self, bonus=BASE_VALUE):
         return sqrt(81) + bonus
 
     def describe(self):
         return json.dumps({"name": self.name, "status": STATUS})
+
 
 @traced
 def build_worker(name, default=BASE_VALUE):

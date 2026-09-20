@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python ${{ matrix.python }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ['3.13', '3.14']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          version: '0.12.13'
+          python-version: ${{ matrix.python }}
+          enable-cache: true
+      - name: Install locked development dependencies
+        run: uv sync --locked
+      - name: Test
+        run: uv run --locked python -m pytest -q
+      - name: Build wheel from source distribution
+        run: uv run --locked python -m build
+      - name: Check distribution metadata and README
+        run: uv run --locked python -m twine check --strict dist/*
+      - name: Verify clean installations and source distribution tests
+        run: uv run --locked python scripts/verify_dist.py

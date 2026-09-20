@@ -1,6 +1,5 @@
 """Bundled from package 'dependency_pkg'."""
 
-
 # imported from: test/fixtures/dependency_pkg/z_base.py
 DEFAULT_SIZE = 11
 
